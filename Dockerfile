@@ -12,14 +12,15 @@ RUN adduser --system --uid 1001 app
 COPY --chown=app:app package.json /app/package.json
 COPY --chown=app:app index.mjs /app/index.mjs
 
+# Runtime deps
+RUN apk add -U bash
+
 COPY --from=kia41152.live.dynatrace.com/linux/oneagent-codemodules-musl:nodejs-sdk / /
-ENV LD_PRELOAD /opt/dynatrace/oneagent/agent/lib64/liboneagentproc.so
+ARG DYNATRACE_PRELOAD=""
+ENV LD_PRELOAD="$DYNATRACE_PRELOAD"
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
-
-# Runtime deps
-RUN apk add -U bash
 
 CMD ["bash"]
 
